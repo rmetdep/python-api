@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Query
 from random import randint
 import json
+import mysql.connector
 
 app = FastAPI()
 
@@ -11,6 +12,28 @@ drivers = ["Max Verstappen", "Lewis Hamilton", "Valtteri Bottas", "Charles Lecle
 teams = ["Red Bull", "Mercedes", "Ferrari", "McLaren", "AlphaTauri", "Alpine", "Aston Martin", "Alfa Romeo", "Williams"]
 # list of formula 1 circuits
 circuits = ["Monza", "Silverstone", "Suzuka", "Interlagos", "Imola", "Baku", "Barcelona", "Monaco", "Hockenheim", "Hungaroring", "Spa", "Nurburgring", "Sochi", "Portimao", "Mexico", "Austin", "Sakhir", "Abu Dhabi", "Jeddah", "Sakhir Short", "Jeddah Short"]
+
+# db setup
+db = mysql.connector.connect(
+  host="sql-service",
+  user="apiaccess",
+  password="apidev1!"
+)
+cursor = db.cursor()
+
+# return link to docs if people are lazy and didn't read the docs
+@app.get("/")
+def read_root():
+    return {"docs": "https://github.com/rmetdep/python-api"}
+
+# test
+@app.get("/test")
+def test():
+    file = []
+    cursor.execute("SELECT driverName FROM driver")
+    for x in cursor:
+        file.append(x)
+    return {"query": file[randint(1, len(file))-1]}
 
 @app.get("/driver") # get a rondom driver back
 async def get_driver():
@@ -23,4 +46,4 @@ async def get_team():
 @app.post("/addciruit") # lookup a drivers stats by name
 async def add_circuit(circuit: str = Query(...)):
     circuits.append(circuit)
-    return {"circuit": circuit[randint(1, 20)-1]}
+    return {"added": circuit}
