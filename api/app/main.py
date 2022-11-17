@@ -35,7 +35,7 @@ def test():
         file.append(x)
     result = file[randint(1, len(file))-1]
     # remove [] brackets in result
-    result = str(result).replace("(", "").replace(")", "").replace(", ", "")
+    result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
     return {"query": result}
 
 @app.get("/driver") # get a rondom driver back
