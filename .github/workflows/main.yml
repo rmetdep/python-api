@@ -1,4 +1,4 @@
-# File: .github/main.yml
+# File: .github/workflows/main.yml
 name: Deliver container
 
 on: push
