@@ -30,7 +30,7 @@ def read_root():
 @app.get("/test")
 def test():
     file = []
-    cursor.execute("SELECT driverName FROM driver")
+    cursor.execute("SELECT driverName FROM api.driver")
     for x in cursor:
         file.append(x)
     return {"query": file[randint(1, len(file))-1]}
