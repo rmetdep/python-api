@@ -4,15 +4,6 @@ import json
 import mysql.connector
 
 app = FastAPI()
-
-# declare variables
-# list of formula 1 drivers
-drivers = ["Max Verstappen", "Lewis Hamilton", "Valtteri Bottas", "Charles Leclerc", "Carlos Sainz", "Lando Norris", "Daniel Ricciardo", "Pierre Gasly", "Esteban Ocon", "Sergio Perez", "Lance Stroll", "Yuki Tsunoda", "Sebastian Vettel", "Fernando Alonso", "Kimi Raikkonen", "Antonio Giovinazzi", "Nicholas Latifi", "Mick Schumacher", "George Russell"]
-# list of formula 1 teams
-teams = ["Red Bull", "Mercedes", "Ferrari", "McLaren", "AlphaTauri", "Alpine", "Aston Martin", "Alfa Romeo", "Williams"]
-# list of formula 1 circuits
-circuits = ["Monza", "Silverstone", "Suzuka", "Interlagos", "Imola", "Baku", "Barcelona", "Monaco", "Hockenheim", "Hungaroring", "Spa", "Nurburgring", "Sochi", "Portimao", "Mexico", "Austin", "Sakhir", "Abu Dhabi", "Jeddah", "Sakhir Short", "Jeddah Short"]
-
 # db setup
 db = mysql.connector.connect(
   host="sql-service",
@@ -26,7 +17,7 @@ cursor = db.cursor()
 def read_root():
     return {"docs": "https://github.com/rmetdep/python-api"}
 
-# test
+# test function
 @app.get("/test")
 def test():
     return {"test": "no tests active"}
@@ -38,7 +29,6 @@ async def get_driver():
     for x in cursor:
         file.append(x)
     result = file[randint(1, len(file))-1]
-    # remove [] brackets in result
     result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
     return {"driver": result}
 
@@ -49,11 +39,12 @@ async def get_team():
     for x in cursor:
         file.append(x)
     result = file[randint(1, len(file))-1]
-    # remove [] brackets in result
     result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
     return {"team": result}
 
 @app.post("/addciruit") # lookup a drivers stats by name
 async def add_circuit(circuit: str = Query(...)):
-    circuits.append(circuit)
-    return {"added": circuit}
+    file = []
+    cursor.execute("INSERT INTO api.circuit (circuitName) VALUES ('" + circuit + "')")
+    db.commit()
+    return {"circuit": circuit}
