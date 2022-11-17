@@ -34,8 +34,8 @@ def test():
     for x in cursor:
         file.append(x)
     # to string for json
-
-    return {"query": str(file[randint(1, len(file))-1])}
+    result = file[randint(1, len(file))-1]
+    return {"query": result}
 
 @app.get("/driver") # get a rondom driver back
 async def get_driver():
