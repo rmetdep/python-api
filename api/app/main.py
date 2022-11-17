@@ -33,7 +33,7 @@ def test():
     cursor.execute("SELECT driverName FROM api.driver")
     for x in cursor:
         file.append(x)
-    return {"query": file[randint(1, len(file))-1]}
+    return {"query": file[randint(1, len(file))-1].toString()}
 
 @app.get("/driver") # get a rondom driver back
 async def get_driver():
