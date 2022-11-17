@@ -33,8 +33,9 @@ def test():
     cursor.execute("SELECT driverName FROM api.driver")
     for x in cursor:
         file.append(x)
-    # to string for json
     result = file[randint(1, len(file))-1]
+    # remove [] brackets in result
+    result = str(result).replace("(", "").replace(")", "").replace(", ", "")
     return {"query": result}
 
 @app.get("/driver") # get a rondom driver back
