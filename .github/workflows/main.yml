@@ -1,17 +1,34 @@
 # File: .github/workflows/main.yml
-name: Deliver container
+name: Deliver container to Okteto
 
 on: push
 
 jobs:
-
-  devflow:
+  preview:
     runs-on: ubuntu-latest
     steps:
-    
-    - uses: okteto/context@latest
+    - name: checkout
+      uses: actions/checkout@master
+
+    - name: Context
+      uses: okteto/context@latest
       with:
         token: ${{ secrets.OKTETO_TOKEN }}
-    
-    - name: "Build"
-      uses: okteto/build@latest
+
+    - name: Create namespace
+      uses: okteto/create-namespace@latest
+      with:
+        namespace: pr-${{ github.event.number }}-rmetdep
+   
+    - name: Deploy application
+      uses: okteto/deploy-stack@latest
+      with:
+        build: "true"
+        namespace: pr-${{ github.event.number }}-rmetdep
+
+    - name: add comment to PR
+      uses: okteto/notify-pr@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        message: "Preview environment available at https://web-pr-${{ github.event.number }}-namespace.cloud.okteto.net"
