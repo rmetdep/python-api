@@ -2,6 +2,10 @@ from fastapi import FastAPI, Query
 from random import randint
 import json
 import mysql.connector
+from pydantic import BaseModel
+
+class Circuit(BaseModel):
+    name: str
 
 app = FastAPI()
 # db setup
@@ -43,8 +47,12 @@ async def get_team():
     return {"team": result}
 
 @app.post("/addciruit") # lookup a drivers stats by name
-async def add_circuit(circuit: str = Query(...)):
+async def add_circuit(circuit: Circuit):
     file = []
-    cursor.execute("INSERT INTO api.circuit (circuitName) VALUES ('" + circuit + "')")
+    cursor.execute("SELECT circuitName FROM api.circuits")
+    for x in cursor:
+        if x.lower() == circuit.name.lower():
+            return {"error": "circuit already exists"}
+    cursor.execute("INSERT INTO api.circuit (circuitName) VALUES ('" + circuit.name[0] + "')")
     db.commit()
-    return {"circuit": circuit}
+    return {circuit.name[0]: "added"}
