@@ -64,7 +64,6 @@ async def get_team():
 async def add_circuit(circuit: Circuit):
     cursor.execute("SELECT circuitName FROM api.circuits")
     for x in cursor:
-        print(str(x).replace("(", "").replace(")", "").replace(",", "").replace("'", ""))
         if str(x).replace("(", "").replace(")", "").replace(",", "").replace("'", "") == circuit.name:
             return {"response": "circuit already exists"}
     cursor.execute("INSERT INTO api.circuits (circuitName) VALUES ('" + circuit.name + "')")
