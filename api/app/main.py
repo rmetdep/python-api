@@ -51,7 +51,7 @@ async def add_circuit(circuit: Circuit):
     file = []
     cursor.execute("SELECT circuitName FROM api.circuits")
     for x in cursor:
-        if x.lower() == circuit.name.lower():
+        if x.name.lower() == circuit.name.lower():
             return {"error": "circuit already exists"}
     cursor.execute("INSERT INTO api.circuit (circuitName) VALUES ('" + circuit.name[0] + "')")
     db.commit()
