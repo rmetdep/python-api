@@ -26,10 +26,10 @@
 
     </div>
     <div x-data="{
-        cicuitresponse: null,
+        circuitresponse: null,
         circuitpost: null,
         async postcircuit() {
-            this.circuitresponse = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/addcirccuit2', 
+            this.circuitresponse = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/addciruit', 
             {
                 method: 'POST',
                 body: JSON.stringify({
@@ -40,13 +40,13 @@
                 },
             })).json();
 
-            console.log(this.cicuitresponse);
+            console.log(this.circuitresponse);
         },
     }">
+        <p>Add Circuit</p>
         <input type="text" x-model="circuitpost">
         <button x-on:click="postcircuit()">Add</button>
-        <p>Title that was inserted: <strong x-text="responsedata.title"></strong></p>
-
+        <p>Response: <strong x-text="circuitresponse.response">Loading...</strong></p>
     </div>
 </body>
 
