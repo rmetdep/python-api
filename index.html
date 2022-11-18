@@ -11,25 +11,42 @@
 
 <body>
     <div x-data="{
-        responsedata: null,
-        async getData() {
-            this.responsedata = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/driver')).json();
-        }
+        driver: null,
+        team: null,
+        async getDriver() {
+            this.driver = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/driver')).json();
+        },
+        async getTeam() {
+            this.team = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/team')).json();
+        },
+    }" x-init="getDriver(),getTeam()">
+        <p>Driver: <strong x-text="driver.driver">Loading...</strong></p>
+        <p>Team: <strong x-text="team.team">Loading...</strong></p>
+        <button @click="getDriver(), getTeam()">Update Data</button>
+
+    </div>
+    <div x-data="{
+        cicuitresponse: null,
+        circuitpost: null,
+        async postcircuit() {
+            this.circuitresponse = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/addcirccuit2', 
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: this.circuitpost,
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+            })).json();
+
+            console.log(this.cicuitresponse);
+        },
     }">
-        Data returned: <strong x-text=></strong>
-        <div x-show="responsedata">
-            <div x-for="item in responsedata">
-                <div x-text="item.name"></div>
-                <div x-text="item.surname"></div>
-                <div x-text="item.driverNumber"></div>
-                <div x-text="item.team"></div>
-                <div x-text="item.country"></div>
-                <div x-text="item.points"></div>
-                <div x-text="item.wins"></div>
-                <div x-text="item.podiums"></div>
-            </div>
-        </div>
-        <button x-on:click="getData()">Get Data</button>
+        <input type="text" x-model="circuitpost">
+        <button x-on:click="postcircuit()">Add</button>
+        <p>Title that was inserted: <strong x-text="responsedata.title"></strong></p>
+
     </div>
 </body>
 

@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Query
-from random import randint
-import json
-import mysql.connector
-from pydantic import BaseModel
-# import CORS
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Query                  # Import FastAPI and Query
+from random import randint                          # for random number generation
+import json                                         # to read and create json
+import mysql.connector                              # mysql db connector
+from pydantic import BaseModel                      # base model for data validation
+from fastapi.middleware.cors import CORSMiddleware  # CORS
 
 # post class
 class Circuit(BaseModel):
@@ -67,7 +66,7 @@ async def add_circuit(circuit: Circuit):
     cursor.execute("SELECT circuitName FROM api.circuits")
     for x in cursor:
         if x == circuit.name:
-            return {"error": "circuit already exists"}
+            return {"response": "circuit already exists"}
     cursor.execute("INSERT INTO api.circuits (circuitName) VALUES ('" + circuit.name + "')")
     db.commit()
-    return {circuit.name: "added"}
+    return {"response": circuit.name + " added"}
