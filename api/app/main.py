@@ -3,11 +3,26 @@ from random import randint
 import json
 import mysql.connector
 from pydantic import BaseModel
+# import CORS
+from fastapi.middleware.cors import CORSMiddleware
 
+# post class
 class Circuit(BaseModel):
     name: str
 
+# init app
 app = FastAPI()
+
+# CORS allow all origins
+origins = ['*']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # db setup
 db = mysql.connector.connect(
   host="sql-service",
@@ -21,7 +36,7 @@ cursor = db.cursor()
 def read_root():
     return {"docs": "https://github.com/rmetdep/python-api"}
 
-# test function
+# test function - deprecated
 @app.get("/test")
 def test():
     return {"test": "no tests active"}
