@@ -53,6 +53,6 @@ async def add_circuit(circuit: Circuit):
     for x in cursor:
         if x == circuit.name:
             return {"error": "circuit already exists"}
-    cursor.execute("INSERT INTO api.circuit (circuitName) VALUES ('" + circuit.name[0] + "')")
+    cursor.execute("INSERT INTO api.circuits (circuitName) VALUES ('" + circuit.name[0] + "')")
     db.commit()
     return {circuit.name[0]: "added"}
