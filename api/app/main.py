@@ -62,10 +62,10 @@ async def get_team():
 
 @app.post("/addciruit") # lookup a drivers stats by name
 async def add_circuit(circuit: Circuit):
-    file = []
     cursor.execute("SELECT circuitName FROM api.circuits")
     for x in cursor:
-        if x.circuitName == circuit.name:
+        print(str(x))
+        if str(x) == circuit.name:
             return {"response": "circuit already exists"}
     cursor.execute("INSERT INTO api.circuits (circuitName) VALUES ('" + circuit.name + "')")
     db.commit()
