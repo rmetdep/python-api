@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Query                  # Import FastAPI and Query
 from random import randint                          # for random number generation
 import json                                         # to read and create json
-import mysql.connector                              # mysql db connector
+# import mysql.connector                            # mysql db connector - deprecated
+import sqlite3                                      # sqlite db connector
 from pydantic import BaseModel                      # base model for data validation
 from fastapi.middleware.cors import CORSMiddleware  # CORS
 
@@ -22,13 +23,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# db setup
-db = mysql.connector.connect(
-  host="sql-service",
-  user="apiaccess",
-  password="apidev1!"
-)
-cursor = db.cursor()
+# db setup - deprecated
+# db = mysql.connector.connect(
+#   host="sql-service",
+#   user="apiaccess",
+#   password="apidev1!"
+# )
+# cursor = db.cursor()
+
+# SQLite db setup dict
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 # return link to docs if people are lazy and didn't read the docs
 @app.get("/")
@@ -42,30 +50,40 @@ def test():
 
 @app.get("/driver") # get a rondom driver back
 async def get_driver():
-    file = []
-    cursor.execute("SELECT driverName FROM api.driver")
-    for x in cursor:
-        file.append(x)
+    conn = sqlite3.connect('data.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    file = cur.execute("SELECT driverName FROM driver;").fetchall()
+    conn.close()
     result = file[randint(1, len(file))-1]
     result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
     return {"driver": result}
 
 @app.get("/team")   # get a random team back
 async def get_team():
-    file = []
-    cursor.execute("SELECT teamName FROM api.team")
-    for x in cursor:
-        file.append(x)
+    conn = sqlite3.connect('data.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    file = cur.execute("SELECT teamName FROM team;").fetchall()
+    conn.close()
     result = file[randint(1, len(file))-1]
     result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
     return {"team": result}
 
 @app.post("/addciruit") # lookup a drivers stats by name
 async def add_circuit(circuit: Circuit):
-    cursor.execute("SELECT circuitName FROM api.circuits")
-    for x in cursor:
+    conn = sqlite3.connect('data.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    file = cur.execute("SELECT circuitName FROM circuit;").fetchall()
+    conn.close()
+    for x in file:
         if str(x).replace("(", "").replace(")", "").replace(",", "").replace("'", "") == circuit.name:
             return {"response": "circuit already exists"}
-    cursor.execute("INSERT INTO api.circuits (circuitName) VALUES ('" + circuit.name + "')")
-    db.commit()
+    conn = sqlite3.connect('data.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    cur.execute("INSERT INTO circuit (circuitName) VALUES ('" + circuit.name + "');")
+    conn.commit()
+    conn.close()
     return {"response": circuit.name + " added"}
