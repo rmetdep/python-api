@@ -38,6 +38,10 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
+def rmv_json(file):
+    file = file.replace("}", "").replace("{", "").replace("'", "")
+    file = file.split(": ")
+    return file[1]
 # return link to docs if people are lazy and didn't read the docs
 @app.get("/")
 def read_root():
@@ -56,8 +60,8 @@ async def get_driver():
     file = cur.execute("SELECT driverName FROM driver;").fetchall()
     conn.close()
     result = file[randint(1, len(file))-1]
-    result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
-    return {"driver": result}
+    # result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
+    return {"driver": rmv_json(str(result))}
 
 @app.get("/team")   # get a random team back
 async def get_team():
@@ -67,23 +71,23 @@ async def get_team():
     file = cur.execute("SELECT teamName FROM team;").fetchall()
     conn.close()
     result = file[randint(1, len(file))-1]
-    result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
-    return {"team": result}
+    # result = str(result).replace("(", "").replace(")", "").replace(",", "").replace("'", "")
+    return {"team": rmv_json(str(result))}
 
 @app.post("/addciruit") # lookup a drivers stats by name
 async def add_circuit(circuit: Circuit):
     conn = sqlite3.connect('data.db')
     conn.row_factory = dict_factory
     cur = conn.cursor()
-    file = cur.execute("SELECT circuitName FROM circuit;").fetchall()
+    file = cur.execute("SELECT circuitName FROM circuits;").fetchall()
     conn.close()
     for x in file:
-        if str(x).replace("(", "").replace(")", "").replace(",", "").replace("'", "") == circuit.name:
+        if rmv_json(str(x)) == circuit.name:
             return {"response": "circuit already exists"}
     conn = sqlite3.connect('data.db')
     conn.row_factory = dict_factory
     cur = conn.cursor()
-    cur.execute("INSERT INTO circuit (circuitName) VALUES ('" + circuit.name + "');")
+    cur.execute("INSERT INTO circuits (circuitName) VALUES ('" + circuit.name + "');")
     conn.commit()
     conn.close()
     return {"response": circuit.name + " added"}

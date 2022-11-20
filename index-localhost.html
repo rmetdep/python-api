@@ -14,10 +14,10 @@
         driver: null,
         team: null,
         async getDriver() {
-            this.driver = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/driver')).json();
+            this.driver = await (await fetch('http://localhost:8000/driver')).json();
         },
         async getTeam() {
-            this.team = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/team')).json();
+            this.team = await (await fetch('http://localhost:8000/team')).json();
         },
     }" x-init="getDriver(),getTeam()">
         <p>Driver: <strong x-text="driver.driver">Loading...</strong></p>
@@ -29,7 +29,7 @@
         circuitresponse: null,
         circuitpost: null,
         async postcircuit() {
-            this.circuitresponse = await (await fetch('https://api-service-rmetdep.cloud.okteto.net/addciruit', 
+            this.circuitresponse = await (await fetch('http://localhost:8000/addciruit', 
             {
                 method: 'POST',
                 body: JSON.stringify({
