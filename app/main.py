@@ -14,7 +14,7 @@ class Circuit(BaseModel):
 app = FastAPI()
 
 # CORS allow all origins
-origins = ['*']
+origins = ['https://rmetdep.github.io/python-api', 'https://bacbat32.sinners.be/apidev/']
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
