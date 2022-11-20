@@ -3,7 +3,8 @@ networks:
   api: {}
 services:
   api-service:
-    build: ./api
+    # build: ./api
+    image: r0893183/python-api
     container_name: api-service
     networks:
      - api

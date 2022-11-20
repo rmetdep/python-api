@@ -1,27 +1,20 @@
-# File: .github/workflows/main.yml
-name: Deliver container to Okteto
+name: Deliver container
 
 on: push
 
 jobs:
-  preview:
+  delivery:
     runs-on: ubuntu-latest
+    name: Deliver container
     steps:
-    - name: checkout
-      uses: actions/checkout@master
+      - name: Check out repository
+        uses: actions/checkout@v1
 
-    - name: Context
-      uses: okteto/context@latest
-      with:
-        token: ${{ secrets.OKTETO_TOKEN }}
+      - name: Docker login
+        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Create namespace
-      uses: okteto/create-namespace@latest
-      with:
-        namespace: pr-${{ github.event.number }}-rmetdep
-   
-    - name: Deploy application
-      uses: okteto/deploy-stack@latest
-      with:
-        build: "true"
-        namespace: pr-${{ github.event.number }}-rmetdep
+      - name: Docker Build
+        run: docker build -t ${{ secrets.DOCKER_USER }}/api/python-api:latest .
+
+      - name: Upload container to Docker Hub with Push
+        run: docker push ${{ secrets.DOCKER_USER }}/api/python-api:latest
